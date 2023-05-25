@@ -1,0 +1,293 @@
+
+<!-- saved from url=(0072)http://10.3.3.3:33312/codes/js/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>
+
+  function randomArray(size) {
+    var result = []
+    for (var i = 0; i < size; i++) {
+      result.push(Math.random() * size | 0)
+    }
+    return result
+  }
+
+  // 判断一个数组是否是非降序
+  function isSorted(array) {
+    for (var i = 1; i < array.length; i++) {
+      if (array[i] < array[i - 1]) {
+        return false
+      }
+    }
+    return true
+  }
+
+
+  function swap(array, i, j) {
+    var t = array[i]
+    array[i] = array[j]
+    array[j] = t
+    return array
+  }
+
+  /**
+   * 冒泡排序
+   * 持续对比相临两个元素,如果顺序不对,就换
+   * 每跑完一趟总把最大的元素移动到最后一个位置
+   * 于是下一趟就对比的次数就可以比上一趟少一次
+   * 当某一趟运行的过程中没有进行过一次交换,则表示数组已经有序
+   * 结束.
+   *
+   * 时间复杂度: n * n
+   * 空间复杂度: O(1)
+   */
+  function bubbleSort(array) {
+    for (var stop = array.length - 2; stop >= 0; stop--) {
+      var 交换过 = false
+      for (var i = 0; i <= stop; i++) {
+        if (array[i] > array[i + 1]) {
+          交换过 = true
+          swap(array, i, i + 1)
+        }
+      }
+      if (!交换过) {
+        break
+      }
+    }
+    return array
+  }
+
+  /**
+   * 插入排序
+   * 数组被分为左边的有序部分和右半边的无序部分
+   * 每次将无序部分的第一个插入有序部分
+   * 持续执行到最后一个元素即可
+   *
+   * 时间: O(n * n)
+   * 空间: O(1)
+   *
+   */
+  function insertSort(array) {
+    for (var i = 1; i < array.length; i++) {
+      var item = array[i]
+      for (var j = i - 1; j >= 0; j--) {
+        if (array[j] > item) {
+          array[j + 1] = array[j]
+        } else {
+          break
+        }
+      }
+      array[j + 1] = item
+    }
+    return array
+  }
+
+  // function insertSort(array) {
+  //   for (var i = 1; i < array.length; i++) {
+  //     for (var j = i - 1; j >= 0; j--) {
+  //       if (array[j] > array[j + 1]) {
+  //         swap(array, j, j + 1)
+  //       } else {
+  //         break
+  //       }
+  //     }
+  //   }
+  // }
+
+
+  /**
+   * 选择排序
+   *
+   * 每次查找无序部分的最小值,然后放入有序部分的下一个位置
+   * 有序部分后一位置的值跟最小值换位置
+   * 进行n-1次即可,因为最后一个"最小值"其实就是整个数组的最大值
+   * 最后它本来也是出现在数组最后的
+   *
+   * 时间: O(n * n)
+   * 空间: O(1)
+   */
+  function selectSort(array) {
+    for (var start = 0; start <= array.length - 2; start++) {
+      var minIdx = start // 认为范围内第一个元素即为最小值
+      for (var i = start + 1; i < array.length; i++) {
+        if (array[i] < array[minIdx]) {
+          minIdx = i
+        }
+      }
+      swap(array, start, minIdx)
+    }
+    return array
+  }
+
+  /**
+   * 归并排序
+   * 将原数组一分为二,
+   * 对两个子数组分别排序
+   * 排好之后合并成一个大的有序数组
+   * 对子数组的排序通过递归调用自身实现
+   *
+   * 时间: O(n*log(n))
+   * 空间: n + log(n) = O(n)
+   */
+  function mergeSort(array) {
+    if (array.length < 2) {
+      return array
+    }
+
+    var mid = array.length >> 1
+
+    var leftArray = array.slice(0, mid)
+    var rightArray = array.slice(mid)
+
+    leftArray = mergeSort(leftArray)
+    rightArray = mergeSort(rightArray)
+
+    var i = 0
+    var j = 0
+    var k = 0
+
+    while (i < leftArray.length && j < rightArray.length) {
+      if (leftArray[i] < rightArray[j]) {
+        array[k++] = leftArray[i++]
+      } else {
+        array[k++] = rightArray[j++]
+      }
+    }
+    while (i < leftArray.length) {
+      array[k++] = leftArray[i++]
+    }
+    while (j < rightArray.length) {
+      array[k++] = rightArray[j++]
+    }
+
+    return array
+  }
+
+
+  // 对array的start到end范围内的元素执行归并排序
+  // 包含start,不包含end
+  // 失败: 归并排序不能完全就地完成,一定要使用额外的空间
+  function mergeSort2(array, start = 0, end = array.length) {
+    if (end - start < 2) {
+      return array
+    }
+
+    var mid = array.length >> 1
+
+    mergeSort(array, 0, mid)
+    mergeSort(array, mid, array.length)
+
+    var i = 0
+    var j = 0
+    var k = 0
+
+    while (i < leftArray.length && j < rightArray.length) {
+      if (leftArray[i] < rightArray[j]) {
+        array[k++] = leftArray[i++]
+      } else {
+        array[k++] = rightArray[j++]
+      }
+    }
+    while (i < leftArray.length) {
+      array[k++] = leftArray[i++]
+    }
+    while (j < rightArray.length) {
+      array[k++] = rightArray[j++]
+    }
+
+    return array
+  }
+
+
+  /**
+   * 快速排序简单版
+   *
+   * 从原数组中随机取一个数
+   * 基于这个数用额外空间将原数组一分为3
+   * 小于它的,等于它的,大于它的
+   * 然后递归对小于和大于它的两个数组排序
+   * 之后把三个数组连接即可
+   *
+   * 时间复杂度: n * log(n)
+   * 空间复杂度: n
+
+   */
+  function quickSortSimple(array) {
+    if (array.length < 2) {
+      return array.slice()
+    }
+    var pivotIdx = Math.random() * array.length | 0
+    var pivot = array[pivotIdx]
+
+    var left = []
+    var mid = []
+    var right = []
+
+    for (var item of array) {
+      if (item < pivot) {
+        left.push(item)
+      } else if (item > pivot) {
+        right.push(item)
+      } else {
+        mid.push(item)
+      }
+    }
+
+    left = quickSortSimple(left)
+    right = quickSortSimple(right)
+
+    return left.concat(mid, right)
+  }
+
+  /**
+   * 快速排序原地版
+   *
+   * 随机选一个数,
+   * 将数组中的元素基于这个数原地分为两部分,不借助额外空间
+   * 对两部分的元素们递归操作即可
+   *
+   * 时间复杂度: n * log(n)
+   * 空间复杂度: c * log(n) = O(log(n)), 递归尝试为log(n),每层递归占用固定的空间c
+   */
+  function quickSort(array, start = 0, end = array.length) {
+    if (end - start ==1 ||end - start ==0) {
+      return array
+    }
+
+    var pivotIdx = Math.floor((end - start) * Math.random() + start)
+    var pivot = array[pivotIdx]
+
+    swap(array, pivotIdx, end - 1) // 将pivot元素放到数组的末尾
+
+    var i = start - 1
+    for (var j = start; j < end - 1; j++) {
+      if (array[j] < pivot) {
+        i++
+        swap(array, i, j)
+      }
+    }
+    i++
+    swap(array, i, j)
+
+    quickSort(array, start, i)
+    quickSort(array, i + 1, end)
+
+    return array
+  }
+
+  var array = randomArray(30)
+  array = quickSort(array)
+  console.log(array)
+  // i = start
+  // j = end - 1
+
+  // while (i < j) {
+  //   while (array[i] < pivot && i < j) {
+  //     i++
+  //   }
+  //   while (array[j] > pivot && i < j) {
+  //     j--
+  //   }
+  //   swap(array,i,j)
+  // }
+
+</script>
+</head><body><div style="position: absolute; display: none;"></div><div class="goog-te-spinner-pos"><div class="goog-te-spinner-animation"><svg xmlns="http://www.w3.org/2000/svg" class="goog-te-spinner" width="96px" height="96px" viewBox="0 0 66 66"><circle class="goog-te-spinner-path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg></div></div></body></html>

@@ -1,0 +1,296 @@
+
+
+
+<script>
+
+  /**
+   * 二叉树 binary  tree
+   * 为什么只研究二叉树？
+   * 因为把二叉树研究明白了，就能理解其它数量分支的树，本质都是一样的
+   * 为什么不研究一叉树？
+   *   一叉树就是链表
+   *
+   * 二叉树（多叉树）有哪些应用？
+   *   不管是现实中，还是编程中，有很多事物都是树结构
+   *      如书籍的目录，家谱，公司的组织架构
+   *         html，数学公式，js里面的对象与数组的嵌套
+   *          对象的嵌套实质上是树结构（没有环的情况下，就算有环，其中子结构也包含树结构）
+   *          程序里的表达式（表达式可以嵌套）
+   *          程序的语法，因为语句可以嵌套
+   *              事实上程序在运行之前会先被转换为一个树结构（称为语法树）
+   *                    https://esprima.org/demo/parse.html#
+   *          文件夹结构等等
+   *
+   *
+   *
+   * 二叉树的定义：
+   *   空  是一颗二叉树
+   *   一个根结点，其有一个左子树，是二叉树
+   *              其有一个右子树，是二叉树
+   *
+   *  满二叉树：除最后一层以外，每层的所有结点都有两个子结点
+   *  完全二叉树：当满二叉的最后一层的右边缺失一部分时，称完全二叉树
+   *
+   * 当一颗满二叉树有n层时，它有2**n-1个结点
+   * 当一颗满二叉树有x个结点时，它有  floor(log2(x)) + 1  层
+   * 如果为完全二叉树的结点从上到下从左右到从0开始进行编号时
+   *  编号为n的结点，其两个子结点的编号分别2n+1和2n+2
+   *                其父结点的编号为 (n - 1) >> 1
+   *
+   * 任何一颗使用二叉链表形式表示的二叉树
+   *  当它有n个结点时，都正好有n+1个空置指针
+   *
+   *
+   * 二叉树的表示：
+   *   二叉链表的形式，即每个结点用一个对象表示
+   *    该对象有val，left，right属性，left指向左子树，right指向右子树
+   *   a = {
+   *     val: 1,
+   *     left: {},
+   *     right: {}
+   *   }
+   *
+   *
+   *   数组表示法：将一颗完全二叉树表示到数组中，由于完全二叉的每个结点有着确定的编号，所以可以把编号做为下标保存在数组中
+   *     [1,2,3,4,null,5,6]
+   *        1
+   *      /   \
+   *     2     3
+   *    4     5 6
+   *
+   *
+   *
+   * 数组表示法，但是并不是把二叉树当完全二叉树，而是只把所有非空结点的子结点画出来
+   * 然后从上到正从左往右，把结点的值及空结点依次放入数组
+   *  很明显，这种方式，结点与其父子结点的位置没有确定的数学关系
+   *
+   *
+   */
+
+  // 将根结点在数组rootPosition位置的树转换为一颗二叉链表表示的树
+  function arrayToTree(array, rootPosition = 0) {
+    if (array[rootPosition] == null) {
+      return null
+    }
+
+    var root = {
+      val: array[rootPosition],
+      left: null,
+      right: null,
+    }
+
+    root.left = arrayToTree(array, rootPosition * 2 + 1)
+    root.right = arrayToTree(array, rootPosition * 2 + 2)
+
+    return root
+  }
+
+  // 将root表示的二叉树放入array中，根结点在idx位置，每个子结点在idx*2+1/2的位置
+  function treeToArray(root, idx = 0, array = []) {
+    if (root == null) {
+      return array
+    }
+
+    array[idx] = root.val
+
+    treeToArray(root.left, idx * 2 + 1, array)
+    treeToArray(root.right, idx * 2 + 2, array)
+
+    // for (var i = 0 ; i < array.length; i++) {
+    //   if (!(i in array)) {
+    //     array[i] = null
+    //   }
+    // }
+    return array
+  }
+
+  // function tree2array(root) {
+  //   var array = treeToArray(root)
+
+  //   for (var i = 0 ; i < array.length; i++) {
+  //     if (!(i in array)) {
+  //       array[i] = null
+  //     }
+  //   }
+
+  //   return array
+  // }
+
+
+
+  // 将紧凑的数组转换为树
+  function arrayToTree2(array) {
+    if (array.length == 0 || array[0] == null) {
+      return null
+    }
+    var root = {
+      val: array[0],
+      left: null, right: null,
+    }
+
+    var nodes = [root]
+
+    for (var i = 1; i < array.length; i++) {
+      var currParent = nodes.shift()
+
+      var val = array[i]
+      if (val != null) { // val不是null，即要创建结点
+        var node = {
+          val: val,
+          left: null, right: null,
+        }
+        nodes.push(node)
+      } else {
+        node = null
+      }
+
+      currParent.left = node
+
+      i++
+
+      var val = array[i]
+      if (val != null) { // val不是null，即要创建结点
+        var node = {
+          val: val,
+          left: null, right: null,
+        }
+        nodes.push(node)
+      } else {
+        node = null
+      }
+
+      currParent.right = node
+    }
+    return root
+  }
+
+  function treeToArray2(root) {
+    if (root == null) {
+      return []
+    }
+    var array = []
+
+    var nodes = [root]
+
+    while (nodes.length > 0) {
+      var node = nodes.shift()
+      if (node == null) {
+        array.push(node)
+      } else {
+        array.push(node.val)
+        nodes.push(node.left)
+        nodes.push(node.right)
+      }
+    }
+
+    return array
+  }
+
+
+
+
+  /** 二叉树的遍历(二叉链表形式)
+   *
+   * 先序遍历
+   *  先遍历根结点，再遍历左子树，再遍历右子树
+   *  对于子树的遍历同样是（根左右）的顺序递归进行
+   * 中序遍历
+   * 后序遍历
+   *
+   * 把遍历想成是读一本书有两章，每章有两节，每节有两小节，每小节有两个段。。
+   * 把每章、节、小节、段都称为一部分
+   * 先序遍历
+   *    “读过”每部分的顺序
+   * 中序遍历
+   *    对每部分按“读了一半”顺序排序，得到的就是中序遍历
+   * 后序遍历
+   *    “读完”每部分的顺序
+   *
+   *
+   */
+
+  var tree = arrayToTree2([1,2,3,4,5,,6,,7,8,9,,,,10,,11])
+
+  function preorderTraverse(root, action = console.log) {
+    if (root) {
+      action(root.val)
+      preorderTraverse(root.left, action)
+      preorderTraverse(root.right, action)
+    }
+  }
+
+  function preorderTraverse(root) {
+    if (root) {
+      return [root.val, ...preorderTraverse(root.left), ...preorderTraverse(root.right)]
+    }
+    return []
+  }
+
+  function inorderTraverse(root) {
+    if (root) {
+      inorderTraverse(root.left)
+      console.log(root.val)
+      inorderTraverse(root.right)
+    }
+  }
+
+  function postorderTraverse(root) {
+    if (root) {
+      postorderTraverse(root.left)
+      postorderTraverse(root.right)
+      console.log(root.val)
+    }
+  }
+
+  // 按层遍历
+  function levelOrderTraverse(root) {
+    if (!root) {
+      return []
+    }
+    var currRow = [root]
+    var nextRow = []
+    var result = []
+
+    while (currRow.length) {
+      var currRowVals = []
+      for (var i = 0; i < currRow.length; i++) {
+        var node = currRow[i]
+        currRowVals.push(node.val)
+        if (node.left) {
+          nextRow.push(node.left)
+        }
+        if (node.right) {
+          nextRow.push(node.right)
+        }
+      }
+
+      result.push(currRowVals)
+
+      currRow = nextRow
+      nextRow = []
+    }
+    return result
+  }
+
+  // 拼出一个html用于显示二叉树
+  function showTree(root) {
+    if (root) {
+      var html = '<div style="display:flex;flex-wrap:wrap;">'
+      html += '<header style="width:100%;text-align:center;">' + root.val + '</header>'
+      html += '<aside style="flex:50% 0 0">' + showTree(root.left) + '</aside>'
+      html += '<aside style="flex:50% 0 0">' + showTree(root.right) + '</aside>'
+      html += '</div>'
+      return html
+    }
+    return ''
+  }
+
+
+  // node = {
+  //   val: xxxx,
+  //   left: null,
+  //   right: null,
+  // }
+  // leetcode创建二叉树结点的写法：
+  // node = new TreeNode(1)
+</script>
