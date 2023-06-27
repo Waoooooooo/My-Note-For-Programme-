@@ -304,6 +304,27 @@
 
 
 
+  //插入排序\
+
+  function insertSort(array) {
+    for (let step =  array.length>>1; step > 0 ; step=step>>1) {
+      for (var index = step; index < array.length; index++) {
+      var element = array[index];
+      if (element < array[index - step]) {
+        for (var j = index - step; j>=0; j-=step) {
+          if (element < array[j]) {
+            array[j+step] = array[j]
+          }else{
+            break
+          }
+        }
+        array[j+step]  = element
+      }
+    }
+    }
+
+    return array
+  }
 
 
 </script>
