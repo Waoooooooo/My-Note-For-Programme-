@@ -1,0 +1,24 @@
+Code Point 码点
+  即unicode标准中为某个不可拆分的符号指定的一个编号
+Code Unit 编码单元
+  是具体编码方式中,最小的单位
+  在utf8中是一个字节
+  在utf16中是两个字节
+  utf8编码
+    1字节   0xxxxxxx
+    2字节   110xxxxx 10xxxxxx
+    3字节   1110xxxx 10xxxxxx 10xxxxxx
+    4字节   11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+  utf16编码
+    1编码单元:  xxxxxxxxxxxxxxxx
+    2编码单元:  110110xxxxxxxxxx 110111xxxxxxxxxx
+    目前utf16最多占两个编码单元(4字节)
+    unicode的0xFFFF以内的字符不存在以11011开头的字,所以utf16 2编码单元的字不会与1编码单元的字产生冲突或歧义
+  'foo'.codePointAt(0)  从这个编码单元开始,解析一个码点出来
+  'foo'.length 返回编码单元的数量
+grapheme 字位
+  是显示在一个字的区域内的一个字符
+  多数时候就是一个码点
+  但也有可能通过0x200D这个连接符连接多个符号并显示一个字位内
+  如  实际是由这四个独立码点通过0x200d这个码点连接而成的
+  但它是当做一个字的

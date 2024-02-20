@@ -1,0 +1,330 @@
+<script>
+  // 排序算法
+
+  //  0.0测试工具类
+  //    0.1生成随机数数组
+  function creatArray(length) {
+    var array = new Array(length)
+    for (let index = 0; index < array.length; index++) {
+      array[index] = Math.random() * length | 0;
+    }
+    return array
+  }
+
+  //    0.2检查是否排序成功
+  function isSorted(array) {
+    for (let index = 0; index < array.length - 1; index++) {
+      if (array[index] > array[index + 1]) {
+        return false
+      }
+    }
+    return true
+  }
+  //    0.3交换位置
+  function swap(array, i, j) {
+    var x = array[i]
+    array[i] = array[j]
+    array[j] = x
+  }
+
+
+  //1.0 冒泡排序(bubbleSort)
+  function bubbleSort(array) {
+    var end = array.length - 1
+    //end 作为内层循环遍历的结束点,且当end-1指向元素1时 结束
+    while (end > 0) {
+      var done = true //标记位,当发生交换时为false
+      //内层循环表示每次遍历将当前值与下个值比较,较大的往右
+      for (let index = 0; index < end - 1; index++) {
+        if (array[index] > array[index + 1]) {
+          swap(array, index, index + 1);
+          done = false
+        }
+      }
+      //循环结束后如果没有发生交换 直接return 返回结果
+      if (done) {
+        break
+      }
+      end--
+    }
+    return array
+  }
+
+  //2.0 插入排序
+  // 将数组分为左边的有序数组和右边的无序数组,
+  function insertSort(array) {
+    for (let i = 1; i < array.length; i++) {
+      var element = array[i];
+      //内部循环拿着无需数组的一个元素到有序数组找位置,从后往前,只要有序数组中的元素大于无序数组 则交换位置
+      for (var j = i - 1; j >= 0; j--) {
+        if (array[j] > element) {
+          //如果大于 说明拿着的元素还没到位置,所以将有序数组挨个往后挪
+          array[j + 1] = array[j];
+        } else {
+          //如果有序列表中当前元素小于等于拿着的元素
+          //则将拿着的元素放到该位置
+          break
+        }
+      }
+    }
+    return array
+  }
+
+
+
+  //2.0 选择排序
+  function selectSort(array) {
+    for (let i = 0; i < array.length; i++) {
+      var min = i
+      var done = true //标记位,当数组不是
+      for (let j = i + 1; j < array.length; j++) {
+        if (array[min] > array[j]) {
+          min = j
+        }
+        if (array[j] < array[j - 1]) {
+          done = false
+        }
+      }
+      //一次遍历后,如果被排序(done==true)则结束函数 min为最小的数的下标
+      if (done) {
+        break
+      }
+      swap(array, min, i)
+    }
+    return array
+  }
+
+
+
+  //3.0 归并排序
+  function mergeSort(array) {
+    //将数组分为两份 分别递归,返回条件为 数组长度(开始-结束<2)
+    if (array.length < 2) {
+      return array
+    }
+    var mid = array.length >> 1 //对半分 ,并舍去小数点后
+    var leftArray = array.slice(0, mid)
+    var rightArray = array.slice(mid)
+    //假定方法成功实现
+    leftArray = mergeSort(leftArray)
+    rightArray = mergeSort(rightArray)
+    var l = 0
+    var r = 0
+    var i = 0
+    //当两数组其中有一个遍历完时 循环结束
+    while (l < leftArray.length && r < rightArray.length) {
+      if (leftArray[l] < rightArray[r]) {
+        array[i++] = leftArray[l++]
+      } else {
+        array[i++] = rightArray[r++]
+      }
+    }
+    while (r < rightArray.length) {
+      //当左边的数组用完了,而右边还没用完时
+      array[i++] = rightArray[r++]
+    }
+
+    while (l < leftArray.length) {
+      //当右边的数组用完了,而左边还没用完时
+      array[i++] = leftArray[l++]
+    }
+    return array
+  }
+
+  //4.1快速排序
+  //随机选取一个数 把数组分三份 大于的等于的小雨的
+  function quickSort(array) {
+    if (array.length < 2) {
+      //当拆分到只有一个元素的时候返回数组
+      return array
+    }
+    var 哨兵元素的下标 = Math.random() * array.length | 0
+    var 哨兵元素 = array[哨兵元素的下标]
+    var left = []
+    var right = []
+    var mid = []
+    for (let index = 0; index < array.length; index++) {
+      if (array[index] < 哨兵元素) {
+        left.push(array[index])
+      } else if (array[index] === 哨兵元素) {
+        mid.push(array[index])
+      } else {
+        right.push(array[index])
+      }
+    }
+    left = quickSort(left)
+    right = quickSort(right)
+    //mid不用排序
+    return left.concat(mid, right)
+  }
+
+  //4.2快速排序2.0
+  function quickSort2(array, start = 0, end = array.length - 1) {
+    if (end - start < 1) {
+      //当拆分不了的时候返回
+      return array
+    }
+    //+start可以看做是将随机数的区间右移到end-start之间
+    var 哨兵元素的下标 = Math.floor((end - start) * Math.random() + start)
+    var 哨兵元素 = array[哨兵元素的下标]
+    //将元素右移到最后,待到前面的元素排列完后将哨兵元素移动回最后一个小于哨兵元素的下标后
+    swap(array, 哨兵元素的下标, end)
+    //j指向比哨兵元素小的最后一个元素
+    var i = start - 1
+    for (var j = start; j < end; j++) {
+      if (array[j] < 哨兵元素) {
+        i++
+        swap(array, i, j)
+      }
+    }
+    //循环结束后,比哨兵元素小的元素将在i之前,此时再将哨兵元素和i+1的元素对调
+    i++
+    swap(array, i, j)
+    //此时可以确定的时哨兵元素的位置是正确的
+    quickSort2(array, start, i - 1)
+    quickSort2(array, i + 1, end)
+    return array
+    //此时再将左右两边排序 即可得到一个排好序的数组
+    //注意递归参数不能写死
+
+  }
+
+  function quickSort5(array, start = 0, end = array.length - 1) {
+    //end和start相等的时候返回上一层
+
+    if (end - start < 1) {
+      return array
+    }
+    var 哨兵元素的下标 = Math.floor((end - start) * Math.random() + start)
+    var 哨兵元素 = array[哨兵元素的下标]
+    swap(array, 哨兵元素的下标, end)
+    var i = start - 1
+    for (var j = start; j < end; j++) {
+      if (array[j] < 哨兵元素) {
+        i++
+        swap(array, i, j)
+      }
+    }
+    i++
+    swap(array, i, j)
+    quickSort5(array, start, i - 1)
+    quickSort5(array, i + 1, end)
+    return array
+  }
+
+  function quickSort7(array, start = 0, end = array.length - 1) {
+    //end和start相等的时候返回上一层
+    if (end - start < 1) {
+      return array
+    }
+    var 哨兵元素的下标 = Math.floor((end - start) * Math.random() + start)
+    var 哨兵元素 = array[哨兵元素的下标]
+    //i指向小于哨兵元素的最后一个
+    //k指向大于哨兵元素的第一个
+    var i = start - 1
+    var k = end
+    for (var j = start; j <= k; j++) {
+      if (array[j] < 哨兵元素) {
+        i++
+        swap(array, i, j)
+      }
+      //大于哨兵元素的放在后面
+      if (array[j] > 哨兵元素) {
+        swap(array, j, k)
+        k--
+        j--
+      }
+    }
+    //当结束后,哨兵元素的前半截为start, i,后半截为,k+1,end
+    quickSort7(array, start, i)
+    quickSort7(array, k + 1, end)
+    return array
+  }
+
+
+
+
+
+
+
+
+
+
+  function quickSort6(array, start = 0, end = array.length - 1) {
+    //当start和end同指向一个数时,返回
+    if (end - start < 1) {
+      return array
+    }
+    var pivotIdx = Math.floor((end - start) * Math.random() + start)
+    //哨兵元素
+    var pivot = array[pivotIdx]
+    var i = start - 1 //指向 小于 哨兵元素的最后一个数
+    //将哨兵元素挪到最后一位
+    swap(array, pivotIdx, end)
+    //遍历最后一个数之前的所有数,将小于哨兵元素的数放在的位置
+    for (var j = start; j < end; j++) {
+      if (array[j] < pivot) {
+        //每换一次i++
+        i++
+        swap(array, j, i)
+      }
+    }
+    //循环结束后i指向最后一个小于哨兵元素的数
+    //此时将哨兵元素从最后挪到i+1的位置上
+    i++
+    swap(array, i, end)
+    //再将左右两边分别排序
+    quickSort6(array, start, i - 1)
+    quickSort6(array, i + 1, end)
+    return array
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  //测试代码
+  var array = creatArray(50)
+
+  console.log(array)
+
+  console.log(isSorted(quickSort7(array)))
+  console.log(array)
+
+
+
+
+  //插入排序\
+
+  function insertSort(array) {
+    for (let step =  array.length>>1; step > 0 ; step=step>>1) {
+      for (var index = step; index < array.length; index++) {
+      var element = array[index];
+      if (element < array[index - step]) {
+        for (var j = index - step; j>=0; j-=step) {
+          if (element < array[j]) {
+            array[j+step] = array[j]
+          }else{
+            break
+          }
+        }
+        array[j+step]  = element
+      }
+    }
+    }
+
+    return array
+  }
+
+
+</script>
